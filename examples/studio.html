@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="lib/jquery/jquery-1.9.1.min.js"></script>
+    <script src="lib/three/three.js"></script>
+    <script src="lib/three/support/OrbitControls.js"></script>
+    <script src="lib/three/tools/Tween.js"></script>
+    <script src="wwengine/ww.js"></script>
+    
+    <script>
+        var myStudio;
+        var myActors;
+        var myControls;
+        var myProcess;
+        var processSystem;
+        var currentScript;
+
+        init();
+
+        myRender();
+
+        function myRender() {
+            requestAnimationFrame(myRender);
+            processSystem.update();
+            myControls.updateControls();
+            myStudio.renderer.render(myStudio.scene, myStudio.camera);
+        }
+
+        function init()
+        {
+            currentScript = {name:"Rei",scripts:[]};
+            var script1 = {actionType:"action",id:1,parentId:0,start:0.01,end:0.02,repeat:5};//,duration:1000
+            var script2 = {actionType:"move",id:2,parentId:1,start:{x:0,y:0,z:0},end:{x:0,y:0,z:100},repeat:0};//,duration:10000
+            var script3 = {actionType:"action",id:3,parentId:1,start:0.01,end:0.02,repeat:10};//,duration:500
+            var script4 = {actionType:"effect",id:4,parentId:1,end:5000,duration:10000,message:"这是什么情况？啊啊啊",name:"speak_01"};
+            currentScript.scripts.push(script1);
+            currentScript.scripts.push(script2);
+            currentScript.scripts.push(script3);
+            currentScript.scripts.push(script4);
+
+            var inputParameters_studio = {showPlace: $("#canvas-frame")};
+            myStudio = new WW.Studio(inputParameters_studio);
+            myStudio.makeDefaultFloor();
+            myStudio.makeDefaultSkyBox();
+
+            var inputParameters_actors = {studio: myStudio};
+            myActors = new WW.Actors(inputParameters_actors);
+            myActors.createNewActor("Rei");
+
+            var inputParameters_control = {camera: myStudio.camera, renderer: myStudio.renderer};
+            myControls = new WW.Controls(inputParameters_control);
+
+            var inputParameters_process = {
+                name: "Rei",
+                scene: myStudio.scene,
+                render: myStudio.renderer,
+                effect: myStudio.effect,
+                camera: myStudio.camera
+            };
+            myProcess = new WW.Process(inputParameters_process);
+            myProcess.handleScript(currentScript);
+            processSystem = new WW.ProcessSystem();
+            processSystem.add(myProcess);
+        }
+    </script>
+</head>
+<body>
+<div id="canvas-frame">
+    what's the fuck!!
+</div>
+</body>
+</html>
